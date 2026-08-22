@@ -1,3 +1,4 @@
+Link = "globe-trotter-empowering-personaliz-ten.vercel.app"
 # GlobeTrotter
 
 **Plan smarter. Travel better.**
