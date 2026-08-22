@@ -1,4 +1,4 @@
-Frontend Link = "globe-trotter-empowering-personaliz-ten.vercel.app"
+Frontend Link = "https://globe-trotter-empowering-personaliz-ten.vercel.app"
 Backend Link = "https://globetrotter-api-knjd.onrender.com"
 # GlobeTrotter
 
