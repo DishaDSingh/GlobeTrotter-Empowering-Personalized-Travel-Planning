@@ -1,3 +1,5 @@
+Frontend Link = "https://globe-trotter-empowering-personaliz-ten.vercel.app"
+Backend Link = "https://globetrotter-api-knjd.onrender.com"
 # GlobeTrotter
 
 **Plan smarter. Travel better.**
@@ -115,7 +117,11 @@ cp .env.example .env   # only VITE_API_URL is read from here by the frontend
 
 | Variable | Required? | Notes |
 |---|---|---|
+<<<<<<< HEAD
 | `DATABASE_URL` | No | Defaults to a local PostgreSQL instance (`postgresql+psycopg2://postgres:root@localhost:5432/postgres`). Point it at any Postgres/Supabase URL for production, or swap in a `sqlite:///./globetrotter.db` URL for a zero-setup fallback. |
+=======
+| `DATABASE_URL` | No | Defaults to `sqlite:///./globetrotter.db`. Set to a Postgres/Supabase URL for production. |
+>>>>>>> b7ded192c7b36901f7e2eb7577a8fbc5aac7b695
 | `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` | No | Only needed if you point `DATABASE_URL` at Supabase Postgres. Never expose the service-role key to the frontend. |
 | `MAPBOX_TOKEN` | No | The map uses Leaflet + OpenStreetMap by default (no key needed). Unused unless you wire in a Mapbox tile layer yourself. |
 | `OPENAI_API_KEY` | No | Without it, `/ai/generate-itinerary` and `/ai/optimize-budget` use a deterministic rule-based generator, so AI features work out of the box. With it, itinerary generation calls OpenAI and validates the response before ever using it. |
@@ -125,6 +131,7 @@ cp .env.example .env   # only VITE_API_URL is read from here by the frontend
 
 ## Installation & local development
 
+<<<<<<< HEAD
 **Prerequisites:** Node 20+, Python 3.11+, a running PostgreSQL server (locally installed).
 
 ### Database (PostgreSQL)
@@ -165,6 +172,9 @@ and the backend creates all its tables in it automatically on startup.
 Already have PostgreSQL running elsewhere (a managed instance, Supabase, another local user)?
 Just point `DATABASE_URL` (see the table above) at it instead, using the same
 `postgresql+psycopg2://user:password@host:5432/dbname` format.
+=======
+**Prerequisites:** Node 20+, Python 3.11+.
+>>>>>>> b7ded192c7b36901f7e2eb7577a8fbc5aac7b695
 
 ### Backend
 
