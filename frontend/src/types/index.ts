@@ -170,6 +170,54 @@ export interface SeasonalRecommendations {
   destinations: RecommendationItem[]
 }
 
+export interface TripGuideLeg {
+  destination: Destination
+  days: number
+  nights: number
+  accommodation_cost: number
+  food_cost: number
+  local_transport_cost: number
+  activities_cost: number
+  subtotal: number
+  top_activities: Activity[]
+}
+
+export interface TripGuideHop {
+  from_city: string
+  to_city: string
+  mode: string
+  estimated_cost: number
+}
+
+export interface TripGuidePrefillLeg {
+  destination: Destination
+  days: number
+  activities: Activity[]
+}
+
+export interface TripGuidePrefill {
+  name: string
+  currency: string
+  budgetTotal: number
+  legs: TripGuidePrefillLeg[]
+}
+
+export interface TripGuideResponse {
+  primary_destination: string
+  total_days: number
+  travelers: number
+  currency: string
+  legs: TripGuideLeg[]
+  hops: TripGuideHop[]
+  accommodation_total: number
+  food_total: number
+  local_transport_total: number
+  activities_total: number
+  inter_city_transport_total: number
+  grand_total: number
+  notes: string
+}
+
 export interface SavedDestination {
   id: string
   destination_id: string

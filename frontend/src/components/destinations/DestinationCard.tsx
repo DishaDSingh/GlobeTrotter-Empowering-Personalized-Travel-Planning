@@ -20,7 +20,19 @@ export function DestinationCard({ destination, onOpen, saved, onToggleSave, reas
       transition={{ duration: 0.2 }}
       className="group overflow-hidden rounded-2xl border border-ink-100 bg-white shadow-[var(--shadow-soft)]"
     >
-      <button onClick={() => onOpen?.(destination)} className="block w-full text-left">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => onOpen?.(destination)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onOpen?.(destination)
+          }
+        }}
+        aria-label={`View ${destination.city}`}
+        className="block w-full cursor-pointer text-left"
+      >
         <div className="relative h-48 overflow-hidden">
           <img
             src={destination.image_url || cityImage(destination.city)}
@@ -51,7 +63,7 @@ export function DestinationCard({ destination, onOpen, saved, onToggleSave, reas
             </button>
           )}
         </div>
-      </button>
+      </div>
       <div className="p-4">
         {destination.description && <p className="mb-2 line-clamp-2 text-sm text-ink-500">{destination.description}</p>}
         <div className="flex items-center justify-between">

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Heart, MapPin, Plus, Users } from 'lucide-react'
+import { BookOpenText, Heart, MapPin, Plus, Users } from 'lucide-react'
 import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Input'
@@ -88,6 +88,13 @@ export function DestinationDetailDrawer({ destination, onClose, saved, onToggleS
       <div className="mt-4">
         <WeatherCard destinationId={destination.id} city={destination.city} />
       </div>
+
+      <button
+        onClick={() => navigate('/trip-guide', { state: { destinationId: destination.id } })}
+        className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-brand-300 bg-brand-50 py-2.5 text-sm font-medium text-brand-700 hover:bg-brand-100"
+      >
+        <BookOpenText className="h-4 w-4" /> View full multi-city trip guide for {destination.city}
+      </button>
 
       <div className="mt-4 overflow-hidden rounded-xl">
         <MapView

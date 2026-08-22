@@ -11,6 +11,7 @@ const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'))
 const Dashboard = lazy(() => import('@/pages/Dashboard'))
 const Explore = lazy(() => import('@/pages/Explore'))
+const TripGuide = lazy(() => import('@/pages/TripGuide'))
 const MyTrips = lazy(() => import('@/pages/MyTrips'))
 const CreateTrip = lazy(() => import('@/pages/CreateTrip'))
 const TripDetails = lazy(() => import('@/pages/TripDetails'))
@@ -33,6 +34,7 @@ export default function App() {
 
         <Route element={<AppLayout />}>
           <Route path="/explore" element={<Explore />} />
+          <Route path="/trip-guide" element={<TripGuide />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<Dashboard />} />

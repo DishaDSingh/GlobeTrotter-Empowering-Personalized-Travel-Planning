@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Compass, LayoutDashboard, LogOut, Map, Plus, Settings, ShieldCheck, User as UserIcon } from 'lucide-react'
+import { BookOpenText, Compass, LayoutDashboard, LogOut, Map, Plus, Settings, ShieldCheck, User as UserIcon } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { initials } from '@/lib/utils'
 import { Button } from '@/components/ui/Button'
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button'
 const NAV_LINKS = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/explore', label: 'Explore', icon: Compass },
+  { to: '/trip-guide', label: 'Trip Guide', icon: BookOpenText },
   { to: '/trips', label: 'My Trips', icon: Map },
 ]
 
@@ -36,6 +37,16 @@ export function Navbar() {
               }
             >
               Explore
+            </NavLink>
+            <NavLink
+              to="/trip-guide"
+              className={({ isActive }) =>
+                `rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  isActive ? 'bg-brand-50 text-brand-700' : 'text-ink-600 hover:bg-ink-100 hover:text-ink-900'
+                }`
+              }
+            >
+              Trip Guide
             </NavLink>
           </nav>
           <div className="flex items-center gap-3">

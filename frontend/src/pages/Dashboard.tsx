@@ -170,6 +170,9 @@ export default function Dashboard() {
             <Link to="/trips/create" className="block rounded-xl border border-ink-100 px-4 py-3 text-sm font-medium text-ink-700 hover:border-brand-200 hover:bg-brand-50">
               Plan a new trip
             </Link>
+            <Link to="/trip-guide" className="block rounded-xl border border-ink-100 px-4 py-3 text-sm font-medium text-ink-700 hover:border-brand-200 hover:bg-brand-50">
+              Get a multi-city trip guide (cities, days, full cost breakdown)
+            </Link>
             <Link to="/explore" className="block rounded-xl border border-ink-100 px-4 py-3 text-sm font-medium text-ink-700 hover:border-brand-200 hover:bg-brand-50">
               Discover destinations
             </Link>

@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/context/AuthContext'
 import { friendlyErrorMessage } from '@/lib/api'
+import { consumePendingCreateTripRedirect } from '@/lib/pendingPlan'
 
 const schema = z.object({
   email: z.string().min(1, 'Email is required').email('Enter a valid email'),
@@ -33,6 +34,13 @@ export default function Login() {
     setSubmitting(true)
     try {
       await login(values.email, values.password)
+
+      const pendingRedirect = consumePendingCreateTripRedirect()
+      if (pendingRedirect) {
+        navigate(pendingRedirect.pathname, { replace: true, state: pendingRedirect.state })
+        return
+      }
+
       const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname ?? '/dashboard'
       navigate(from, { replace: true })
     } catch (error) {

@@ -22,6 +22,11 @@ and share your trip publicly for others to copy.
 - **Calendar & Timeline** — two ways to view the same itinerary
 - **Budget** — total/spent/remaining/average-daily-cost, spend-by-category pie chart, city-by-city
   planned-vs-actual chart, spend-over-time chart, over-budget alerts
+- **Trip Guide** — say a destination and trip length (e.g. "Rome, 30 days") and get a suggested
+  multi-city route within the same country, with days allocated per city and a full cost
+  breakdown (accommodation, food, local transport, inter-city train/flight, activities) using
+  each city's real price level and real listed activity prices; hands off straight into Create
+  Trip with destinations, dates, budget, and activities all pre-filled
 - **Budget-first AI trip planner** — describe a destination, duration, and budget (no account
   required) and get a structured day-by-day plan back; works without any API key via a rule-based
   generator, and upgrades automatically to a real LLM if `OPENAI_API_KEY` is set
@@ -198,6 +203,7 @@ GET    /users/me/saved-destinations   POST/DELETE .../saved-destinations/{id}
 GET    /destinations               GET    /destinations/search
 GET    /destinations/recommended   GET    /destinations/seasonal
 GET    /destinations/{id}          GET    /destinations/{id}/weather
+GET    /destinations/{id}/trip-guide?total_days=&travelers=
 
 GET    /activities                 GET    /activities/search        GET  /activities/{id}
 

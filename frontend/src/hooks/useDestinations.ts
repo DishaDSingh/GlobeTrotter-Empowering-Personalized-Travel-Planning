@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import type { Destination, RecommendationItem, SeasonalRecommendations, WeatherData } from '@/types'
+import type { Destination, RecommendationItem, SeasonalRecommendations, TripGuideResponse, WeatherData } from '@/types'
 
 export interface DestinationFilters {
   country?: string
@@ -77,6 +77,19 @@ export function useRecommendedDestinations(limit = 8) {
       const { data } = await api.get<RecommendationItem[]>('/destinations/recommended', { params: { limit } })
       return data
     },
+  })
+}
+
+export function useTripGuide(destinationId: string | undefined, totalDays: number, travelers = 1) {
+  return useQuery({
+    queryKey: ['destinations', destinationId, 'trip-guide', totalDays, travelers],
+    queryFn: async () => {
+      const { data } = await api.get<TripGuideResponse>(`/destinations/${destinationId}/trip-guide`, {
+        params: { total_days: totalDays, travelers },
+      })
+      return data
+    },
+    enabled: !!destinationId && totalDays > 0,
   })
 }
 

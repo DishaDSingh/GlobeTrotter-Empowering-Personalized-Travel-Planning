@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/context/AuthContext'
 import { friendlyErrorMessage } from '@/lib/api'
-import { getPendingPlan, clearPendingPlan } from '@/lib/pendingPlan'
+import { consumePendingCreateTripRedirect } from '@/lib/pendingPlan'
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required').max(120),
@@ -36,10 +36,9 @@ export default function Signup() {
       await registerUser(values.name, values.email, values.password)
       toast.success('Welcome to GlobeTrotter!')
 
-      const pendingPlan = getPendingPlan()
-      if (pendingPlan) {
-        clearPendingPlan()
-        navigate('/trips/create', { replace: true, state: { aiPlan: pendingPlan } })
+      const pendingRedirect = consumePendingCreateTripRedirect()
+      if (pendingRedirect) {
+        navigate(pendingRedirect.pathname, { replace: true, state: pendingRedirect.state })
       } else {
         navigate('/dashboard', { replace: true })
       }

@@ -25,7 +25,7 @@ import { useActivities } from '@/hooks/useActivities'
 import { api, friendlyErrorMessage } from '@/lib/api'
 import { cityImage, placeholderImage } from '@/lib/images'
 import { debounce, formatCurrency } from '@/lib/utils'
-import type { Activity, AIItineraryResponse, Destination, Trip } from '@/types'
+import type { Activity, AIItineraryResponse, Destination, Trip, TripGuidePrefill } from '@/types'
 
 interface SelectedDestination {
   destination: Destination
@@ -36,39 +36,70 @@ interface SelectedDestination {
 const STEPS = ['Basics', 'Dates', 'Destinations', 'Activities', 'Budget', 'Review']
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'INR', 'JPY', 'AED', 'SGD']
 
+function addDays(iso: string, days: number): string {
+  const d = new Date(`${iso}T00:00:00`)
+  d.setDate(d.getDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+
 export default function CreateTrip() {
   const navigate = useNavigate()
   const location = useLocation()
-  const routerState = location.state as { destinationId?: string; aiPlan?: AIItineraryResponse } | null
+  const routerState = location.state as
+    | { destinationId?: string; aiPlan?: AIItineraryResponse; tripGuide?: TripGuidePrefill }
+    | null
   const prefillDestinationId = routerState?.destinationId
   const aiPlan = routerState?.aiPlan
+  const tripGuide = routerState?.tripGuide
+  const tripGuideTotalDays = tripGuide?.legs.reduce((sum, leg) => sum + leg.days, 0) ?? 0
 
   const [step, setStep] = useState(0)
   const [submitting, setSubmitting] = useState(false)
   const [aiModalOpen, setAiModalOpen] = useState(false)
   const [appliedAiPlan, setAppliedAiPlan] = useState(false)
 
-  const [name, setName] = useState(aiPlan ? `${aiPlan.destination} Trip` : '')
+  const [name, setName] = useState(tripGuide?.name ?? (aiPlan ? `${aiPlan.destination} Trip` : ''))
   const [description, setDescription] = useState(
-    aiPlan ? `AI-drafted ${aiPlan.duration_days}-day plan for ${aiPlan.destination}, built around your budget.` : '',
+    tripGuide
+      ? `A ${tripGuideTotalDays}-day trip across ${tripGuide.legs.map((l) => l.destination.city).join(', ')}.`
+      : aiPlan
+        ? `AI-drafted ${aiPlan.duration_days}-day plan for ${aiPlan.destination}, built around your budget.`
+        : '',
   )
   const [coverImage, setCoverImage] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState(() => {
-    if (!aiPlan) return ''
+    const days = tripGuide ? tripGuideTotalDays : aiPlan?.duration_days
+    if (!days) return ''
     const start = new Date()
     start.setDate(start.getDate() + 14)
     const end = new Date(start)
-    end.setDate(end.getDate() + aiPlan.duration_days - 1)
+    end.setDate(end.getDate() + days - 1)
     return end.toISOString().slice(0, 10)
   })
-  const [destinations, setDestinations] = useState<SelectedDestination[]>([])
-  const [activitiesByDestination, setActivitiesByDestination] = useState<Record<string, Activity[]>>({})
-  const [budgetTotal, setBudgetTotal] = useState<number>(aiPlan?.total_estimated_cost ?? 0)
-  const [currency, setCurrency] = useState(aiPlan?.currency ?? 'USD')
+  const [destinations, setDestinations] = useState<SelectedDestination[]>(() => {
+    if (!tripGuide) return []
+    const start = new Date()
+    start.setDate(start.getDate() + 14)
+    let cursor = start.toISOString().slice(0, 10)
+    return tripGuide.legs.map((leg) => {
+      const arrival = cursor
+      const departure = addDays(cursor, leg.days)
+      cursor = departure
+      return { destination: leg.destination, arrival_date: arrival, departure_date: departure }
+    })
+  })
+  const [activitiesByDestination, setActivitiesByDestination] = useState<Record<string, Activity[]>>(() => {
+    if (!tripGuide) return {}
+    const map: Record<string, Activity[]> = {}
+    for (const leg of tripGuide.legs) map[leg.destination.id] = leg.activities
+    return map
+  })
+  const [budgetTotal, setBudgetTotal] = useState<number>(tripGuide?.budgetTotal ?? aiPlan?.total_estimated_cost ?? 0)
+  const [currency, setCurrency] = useState(tripGuide?.currency ?? aiPlan?.currency ?? 'USD')
 
   useEffect(() => {
-    if (aiPlan && !startDate) {
+    if ((aiPlan || tripGuide) && !startDate) {
       const start = new Date()
       start.setDate(start.getDate() + 14)
       setStartDate(start.toISOString().slice(0, 10))
@@ -176,6 +207,18 @@ export default function CreateTrip() {
             We've pre-filled this trip from your AI budget plan for <strong>{aiPlan.destination}</strong>
             {' '}({formatCurrency(aiPlan.total_estimated_cost, aiPlan.currency)} estimated). Once your trip is
             created, open the AI Assistant in the Itinerary tab to add these exact activities.
+          </p>
+        </div>
+      )}
+
+      {tripGuide && (
+        <div className="flex items-start gap-3 rounded-xl bg-brand-50 p-4 text-sm text-brand-800">
+          <Sparkles className="mt-0.5 h-4 w-4 shrink-0" />
+          <p>
+            We've pre-filled this trip from your Trip Guide:{' '}
+            <strong>{tripGuide.legs.map((l) => l.destination.city).join(' → ')}</strong>
+            {' '}({formatCurrency(tripGuide.budgetTotal, tripGuide.currency)} estimated), with dates, destinations,
+            and suggested activities already in place — review and adjust anything below before creating it.
           </p>
         </div>
       )}
