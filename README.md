@@ -1,4 +1,5 @@
-Link = "globe-trotter-empowering-personaliz-ten.vercel.app"
+Frontend Link = "globe-trotter-empowering-personaliz-ten.vercel.app"
+Backend Link = "https://globetrotter-api-knjd.onrender.com"
 # GlobeTrotter
 
 **Plan smarter. Travel better.**
