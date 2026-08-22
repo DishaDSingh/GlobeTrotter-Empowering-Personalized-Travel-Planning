@@ -5,6 +5,8 @@ import { Drawer } from '@/components/ui/Drawer'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Input'
 import { WeatherCard } from './WeatherCard'
+import { NearbyDestinations } from './NearbyDestinations'
+import { NearbyPlaces } from './NearbyPlaces'
 import { MapView } from '@/components/map/MapView'
 import { ActivityCard } from '@/components/activities/ActivityCard'
 import { useActivities } from '@/hooks/useActivities'
@@ -19,9 +21,16 @@ interface DestinationDetailDrawerProps {
   onClose: () => void
   saved?: boolean
   onToggleSave?: (destination: Destination) => void
+  onSelectDestination?: (destination: Destination) => void
 }
 
-export function DestinationDetailDrawer({ destination, onClose, saved, onToggleSave }: DestinationDetailDrawerProps) {
+export function DestinationDetailDrawer({
+  destination,
+  onClose,
+  saved,
+  onToggleSave,
+  onSelectDestination,
+}: DestinationDetailDrawerProps) {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
   const { data: activities, isLoading: activitiesLoading } = useActivities({ destination_id: destination?.id })
@@ -117,6 +126,16 @@ export function DestinationDetailDrawer({ destination, onClose, saved, onToggleS
           <p className="text-sm text-ink-400">No activities listed yet for this destination.</p>
         )}
       </div>
+
+      <div className="mt-6">
+        <NearbyPlaces destinationId={destination.id} />
+      </div>
+
+      {onSelectDestination && (
+        <div className="mt-6">
+          <NearbyDestinations destinationId={destination.id} onSelect={onSelectDestination} />
+        </div>
+      )}
 
       <div className="sticky bottom-0 mt-6 -mx-6 -mb-6 border-t border-ink-100 bg-white p-6">
         {isAuthenticated && trips && trips.length > 0 && (

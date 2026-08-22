@@ -125,3 +125,12 @@
     box-shadow: var(--shadow-lift);
   }
 }
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}

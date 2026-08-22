@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Compass,
-  ImageIcon,
   MapPin,
   Plus,
   Sparkles,
@@ -20,6 +19,7 @@ import { SearchBar } from '@/components/ui/SearchBar'
 import { Card } from '@/components/ui/Card'
 import { ActivityCard } from '@/components/activities/ActivityCard'
 import { AIItineraryModal } from '@/components/trips/AIItineraryModal'
+import { CoverImagePicker } from '@/components/trips/CoverImagePicker'
 import { useDestinationSearch, useDestination } from '@/hooks/useDestinations'
 import { useActivities } from '@/hooks/useActivities'
 import { api, friendlyErrorMessage } from '@/lib/api'
@@ -330,17 +330,7 @@ function StepBasics({
       <h2 className="font-display text-lg font-semibold text-ink-900">Let's name your trip</h2>
       <Input label="Trip name" required placeholder="e.g. Summer in Southeast Asia" value={name} onChange={(e) => setName(e.target.value)} />
       <Textarea label="Description" placeholder="What's this trip about?" value={description} onChange={(e) => setDescription(e.target.value)} />
-      <Input
-        label="Cover image URL"
-        placeholder="https://..."
-        leftIcon={<ImageIcon className="h-4 w-4" />}
-        value={coverImage}
-        onChange={(e) => setCoverImage(e.target.value)}
-        hint="Optional — leave blank to use a default image."
-      />
-      {coverImage && (
-        <img src={coverImage} alt="Cover preview" className="h-40 w-full rounded-xl object-cover" onError={(e) => (e.currentTarget.style.display = 'none')} />
-      )}
+      <CoverImagePicker value={coverImage} onChange={setCoverImage} />
     </div>
   )
 }

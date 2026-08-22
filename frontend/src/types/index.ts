@@ -301,3 +301,37 @@ export interface AdminStats {
 export interface ApiError {
   detail: string
 }
+
+export interface NearbyDestination {
+  destination: Destination
+  distance_km: number
+}
+
+export type NearbyPlaceType = 'hotel' | 'restaurant' | 'cafe'
+
+export interface NearbyPlace {
+  name: string
+  place_type: NearbyPlaceType
+  latitude: number
+  longitude: number
+  distance_km: number
+  address: string | null
+  website: string | null
+}
+
+export interface NearbyPlacesResponse {
+  available: boolean
+  places: NearbyPlace[]
+  message: string | null
+}
+
+export interface PackingListResponse {
+  season_label: string
+  categories: Record<string, string[]>
+  notes: string
+}
+
+export interface CurrencyRatesResponse {
+  base: string
+  rates: Record<string, number>
+}

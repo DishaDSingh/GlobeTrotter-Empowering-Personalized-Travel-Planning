@@ -3,16 +3,19 @@ import { useNavigate, useParams } from 'react-router-dom'
 import {
   Calendar,
   Copy,
+  Download,
   Globe2,
   List,
   LayoutGrid,
   Lock,
   Map as MapIcon,
   Pencil,
+  Printer,
   Sparkles,
   Trash2,
   Wallet,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import { PageLoader } from '@/components/ui/Spinner'
 import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
@@ -22,6 +25,7 @@ import { StopsManager } from '@/components/trips/StopsManager'
 import { EditTripModal } from '@/components/trips/EditTripModal'
 import { ShareTripModal } from '@/components/trips/ShareTripModal'
 import { AIItineraryModal } from '@/components/trips/AIItineraryModal'
+import { PackingListCard } from '@/components/trips/PackingListCard'
 import { ItineraryBuilder } from '@/components/itinerary/ItineraryBuilder'
 import { CalendarGridView } from '@/components/itinerary/CalendarGridView'
 import { TimelineView } from '@/components/itinerary/TimelineView'
@@ -30,6 +34,7 @@ import { MapView, type MapMarker } from '@/components/map/MapView'
 import { WeatherCard } from '@/components/destinations/WeatherCard'
 import { useTrip, useDeleteTrip, useDuplicateTrip, useShareTrip } from '@/hooks/useTrips'
 import { useItineraryActivities, useCalendar } from '@/hooks/useItinerary'
+import { api, friendlyErrorMessage } from '@/lib/api'
 import { placeholderImage } from '@/lib/images'
 import { formatCurrency, formatDateRange, tripDurationDays } from '@/lib/utils'
 
@@ -50,6 +55,23 @@ export default function TripDetails() {
 
   const { data: trip, isLoading } = useTrip(tripId)
   const { data: itineraryItems = [] } = useItineraryActivities(tripId)
+
+  const handleDownloadIcs = async () => {
+    if (!tripId || !trip) return
+    try {
+      const response = await api.get(`/trips/${tripId}/export.ics`, { responseType: 'blob' })
+      const url = URL.createObjectURL(response.data)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${trip.name.replace(/[^A-Za-z0-9 _-]/g, '')}.ics`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      toast.error(friendlyErrorMessage(error, "We couldn't export your itinerary."))
+    }
+  }
   const { data: calendarDays = [] } = useCalendar(tripId)
 
   const deleteTrip = useDeleteTrip()
@@ -99,7 +121,7 @@ export default function TripDetails() {
                 {' · '}{trip.destination_count} destination{trip.destination_count === 1 ? '' : 's'}
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 no-print">
               <Button size="sm" variant="outline" className="border-white/30 bg-white/10 text-white hover:bg-white/20" onClick={() => setAiOpen(true)}>
                 <Sparkles className="h-3.5 w-3.5" /> AI Assistant
               </Button>
@@ -114,7 +136,7 @@ export default function TripDetails() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 no-print">
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
           {TABS.map((t) => (
             <button
@@ -166,6 +188,7 @@ export default function TripDetails() {
             {trip.stops[0]?.destination && (
               <WeatherCard destinationId={trip.stops[0].destination.id} city={trip.stops[0].destination.city} />
             )}
+            <PackingListCard tripId={trip.id} />
           </div>
         </div>
       )}
@@ -182,19 +205,35 @@ export default function TripDetails() {
 
       {tab === 'Calendar' && (
         <div>
-          <div className="mb-4 flex justify-end gap-2">
-            <button
-              onClick={() => setCalendarMode('calendar')}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium ${calendarMode === 'calendar' ? 'bg-brand-600 text-white' : 'bg-white border border-ink-100 text-ink-600'}`}
-            >
-              <LayoutGrid className="h-3.5 w-3.5" /> Calendar
-            </button>
-            <button
-              onClick={() => setCalendarMode('timeline')}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium ${calendarMode === 'timeline' ? 'bg-brand-600 text-white' : 'bg-white border border-ink-100 text-ink-600'}`}
-            >
-              <List className="h-3.5 w-3.5" /> Timeline
-            </button>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 no-print">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCalendarMode('calendar')}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium ${calendarMode === 'calendar' ? 'bg-brand-600 text-white' : 'bg-white border border-ink-100 text-ink-600'}`}
+              >
+                <LayoutGrid className="h-3.5 w-3.5" /> Calendar
+              </button>
+              <button
+                onClick={() => setCalendarMode('timeline')}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium ${calendarMode === 'timeline' ? 'bg-brand-600 text-white' : 'bg-white border border-ink-100 text-ink-600'}`}
+              >
+                <List className="h-3.5 w-3.5" /> Timeline
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleDownloadIcs}
+                className="flex items-center gap-1.5 rounded-full border border-ink-100 bg-white px-3 py-1.5 text-sm font-medium text-ink-600 hover:bg-ink-50"
+              >
+                <Download className="h-3.5 w-3.5" /> Export calendar
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="flex items-center gap-1.5 rounded-full border border-ink-100 bg-white px-3 py-1.5 text-sm font-medium text-ink-600 hover:bg-ink-50"
+              >
+                <Printer className="h-3.5 w-3.5" /> Print itinerary
+              </button>
+            </div>
           </div>
           {calendarMode === 'calendar' ? <CalendarGridView days={calendarDays} /> : <TimelineView days={calendarDays} />}
         </div>

@@ -13,10 +13,10 @@ their actual prices instead of the flat ratio, so it reflects real, named
 things to do rather than a guess.
 """
 
-import math
 from dataclasses import dataclass
 
 from app.models import Activity, Destination
+from app.utils.geo import haversine_km
 
 # Rough, commonly-cited travel budget split. Kept as named constants so the
 # reasoning is visible rather than magic numbers scattered through the code.
@@ -74,17 +74,8 @@ def _allocate_days(route: list[Destination], total_days: int) -> list[int]:
     return [floor_days + e for e in extra]
 
 
-def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    r = 6371.0
-    phi1, phi2 = math.radians(lat1), math.radians(lat2)
-    dphi = math.radians(lat2 - lat1)
-    dlambda = math.radians(lon2 - lon1)
-    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
-    return 2 * r * math.asin(math.sqrt(a))
-
-
 def _inter_city_cost_and_mode(a: Destination, b: Destination) -> tuple[float, str]:
-    distance_km = _haversine_km(a.latitude, a.longitude, b.latitude, b.longitude)
+    distance_km = haversine_km(a.latitude, a.longitude, b.latitude, b.longitude)
     # Scale the fare estimate off the destinations' own price level (their
     # estimated_daily_cost) instead of a hardcoded currency table, so this
     # works for any currency without a per-country fare database. Calibrated

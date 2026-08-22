@@ -11,7 +11,9 @@ from app.models import Activity, Destination, Trip, UserPreference
 from app.schemas.activity import ActivityOut
 from app.schemas.destination import DestinationOut, WeatherOut
 from app.schemas.misc import RecommendationOut, SeasonalRecommendationsOut
+from app.schemas.nearby import NearbyDestinationOut, NearbyPlaceOut, NearbyPlacesResponse
 from app.schemas.trip_guide import TripGuideHop, TripGuideLeg, TripGuideResponse
+from app.services.nearby_service import get_nearby_destinations, get_nearby_places
 from app.services.recommendation_service import get_recommendations, get_seasonal_recommendations
 from app.services.trip_guide_service import build_trip_guide
 from app.services.weather_service import get_current_weather
@@ -156,6 +158,45 @@ def trip_guide(
         inter_city_transport_total=guide.inter_city_transport_total,
         grand_total=guide.grand_total,
         notes=notes,
+    )
+
+
+@router.get("/{destination_id}/nearby-destinations", response_model=list[NearbyDestinationOut])
+def nearby_destinations(destination_id: str, limit: int = Query(6, ge=1, le=20), db: Session = Depends(get_db)):
+    origin = db.get(Destination, destination_id)
+    if not origin:
+        raise HTTPException(status_code=404, detail="Destination not found.")
+    all_destinations = db.query(Destination).all()
+    scored = get_nearby_destinations(all_destinations, origin, limit=limit)
+    return [
+        NearbyDestinationOut(destination=DestinationOut.model_validate(dest), distance_km=round(dist, 1))
+        for dest, dist in scored
+    ]
+
+
+@router.get("/{destination_id}/nearby-places", response_model=NearbyPlacesResponse)
+async def nearby_places(
+    destination_id: str,
+    type: str = Query(..., pattern="^(hotel|restaurant|cafe)$"),
+    radius_km: float = Query(5.0, ge=0.5, le=20),
+    limit: int = Query(12, ge=1, le=30),
+    db: Session = Depends(get_db),
+):
+    destination = db.get(Destination, destination_id)
+    if not destination:
+        raise HTTPException(status_code=404, detail="Destination not found.")
+
+    places, available = await get_nearby_places(destination.latitude, destination.longitude, type, radius_km, limit)
+    message = None
+    if not available:
+        message = "Live place data is temporarily unavailable. Please try again shortly."
+    elif not places:
+        message = f"No mapped {type}s found within {radius_km:.0f} km on OpenStreetMap for this area yet."
+
+    return NearbyPlacesResponse(
+        available=available,
+        places=[NearbyPlaceOut(**vars(p)) for p in places],
+        message=message,
     )
 
 

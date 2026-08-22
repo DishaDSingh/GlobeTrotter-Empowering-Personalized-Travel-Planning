@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { Input, Select, Textarea } from '@/components/ui/Input'
+import { CoverImagePicker } from './CoverImagePicker'
 import { useUpdateTrip } from '@/hooks/useTrips'
 import type { TripDetail } from '@/types'
 
@@ -52,7 +53,7 @@ export function EditTripModal({ trip, open, onClose }: { trip: TripDetail; open:
       <div className="space-y-4">
         <Input label="Trip name" value={name} onChange={(e) => setName(e.target.value)} required />
         <Textarea label="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
-        <Input label="Cover image URL" value={coverImage} onChange={(e) => setCoverImage(e.target.value)} />
+        <CoverImagePicker value={coverImage} onChange={setCoverImage} />
         <div className="grid grid-cols-2 gap-4">
           <Input label="Start date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
           <Input label="End date" type="date" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} />

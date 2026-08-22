@@ -35,6 +35,19 @@ and share your trip publicly for others to copy.
 - **Seasonal recommendations** — "Best places to visit this {season}", ranked by real seasonal
   travel windows per destination (not just popularity)
 - **Sharing** — public trip pages at `/trip/share/:id`, with a "Copy this itinerary" action
+- **Nearby destinations** — real-distance (haversine) suggestions from any destination, regardless
+  of country border (e.g. Agra → Delhi, 192 km)
+- **Nearby places** — live hotels/restaurants/cafés from OpenStreetMap's Overpass API around any
+  destination; real, currently-mapped places rather than curated/invented listings, since specific
+  businesses change too often and too unpredictably to hand-write accurately
+- **Currency conversion** — view any trip's budget in a currency of your choice, converted with
+  live rates (free, key-free, covers all 34 currencies used across the seeded destinations)
+- **Packing list generator** — rule-based suggestions from the trip's season (hemisphere-aware)
+  and the actual activity categories in its itinerary
+- **Calendar export & printable itinerary** — download a trip's itinerary as a `.ics` file
+  (imports into Google/Apple/Outlook calendars) or print a clean, chrome-free view
+- **Cover image upload** — optional Supabase Storage integration for trip covers, with a graceful
+  fallback to pasting an image URL when storage isn't configured
 - **Profile & Settings** — travel preferences, saved destinations, notifications, privacy
   defaults, password change, account deletion
 - **Admin dashboard** — platform-wide stats, user growth, popular cities/activities
@@ -116,7 +129,7 @@ cp .env.example .env   # only VITE_API_URL is read from here by the frontend
 | Variable | Required? | Notes |
 |---|---|---|
 | `DATABASE_URL` | No | Defaults to `sqlite:///./globetrotter.db`. Set to a Postgres/Supabase URL for production. |
-| `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` | No | Only needed if you point `DATABASE_URL` at Supabase Postgres. Never expose the service-role key to the frontend. |
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` | No | `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` also enable cover-image uploads (see below) if you additionally create a **public** storage bucket named `globetrotter-uploads`. Without them, uploads gracefully fall back to pasting an image URL. Never expose the service-role key to the frontend. |
 | `MAPBOX_TOKEN` | No | The map uses Leaflet + OpenStreetMap by default (no key needed). Unused unless you wire in a Mapbox tile layer yourself. |
 | `OPENAI_API_KEY` | No | Without it, `/ai/generate-itinerary` and `/ai/optimize-budget` use a deterministic rule-based generator, so AI features work out of the box. With it, itinerary generation calls OpenAI and validates the response before ever using it. |
 | `JWT_SECRET` | Recommended | Set a long random string in production; the default is insecure. |
@@ -204,8 +217,13 @@ GET    /destinations               GET    /destinations/search
 GET    /destinations/recommended   GET    /destinations/seasonal
 GET    /destinations/{id}          GET    /destinations/{id}/weather
 GET    /destinations/{id}/trip-guide?total_days=&travelers=
+GET    /destinations/{id}/nearby-destinations
+GET    /destinations/{id}/nearby-places?type=hotel|restaurant|cafe
 
 GET    /activities                 GET    /activities/search        GET  /activities/{id}
+
+GET    /currency/rates?base=USD
+POST   /uploads/image   (multipart; requires Supabase Storage config, see Environment variables)
 
 GET    /trips                      POST   /trips
 GET    /trips/{id}                 PUT    /trips/{id}                DELETE /trips/{id}
@@ -220,6 +238,8 @@ POST       /trips/{id}/activities/{activity_id}/duplicate
 
 GET/POST   /trips/{id}/budget      PUT/DELETE /trips/{id}/budget/{record_id}
 GET        /trips/{id}/calendar
+GET        /trips/{id}/packing-list
+GET        /trips/{id}/export.ics
 
 POST/DELETE /trips/{id}/share      GET /shared/{share_id}      POST /shared/{share_id}/copy
 

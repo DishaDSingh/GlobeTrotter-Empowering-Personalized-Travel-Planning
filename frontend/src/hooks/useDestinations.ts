@@ -1,6 +1,15 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import type { Destination, RecommendationItem, SeasonalRecommendations, TripGuideResponse, WeatherData } from '@/types'
+import type {
+  Destination,
+  NearbyDestination,
+  NearbyPlacesResponse,
+  NearbyPlaceType,
+  RecommendationItem,
+  SeasonalRecommendations,
+  TripGuideResponse,
+  WeatherData,
+} from '@/types'
 
 export interface DestinationFilters {
   country?: string
@@ -101,5 +110,34 @@ export function useSeasonalDestinations(limit = 8) {
       return data
     },
     staleTime: 60 * 60 * 1000,
+  })
+}
+
+export function useNearbyDestinations(destinationId: string | undefined, limit = 6) {
+  return useQuery({
+    queryKey: ['destinations', destinationId, 'nearby-destinations', limit],
+    queryFn: async () => {
+      const { data } = await api.get<NearbyDestination[]>(`/destinations/${destinationId}/nearby-destinations`, {
+        params: { limit },
+      })
+      return data
+    },
+    enabled: !!destinationId,
+    staleTime: 60 * 60 * 1000,
+  })
+}
+
+export function useNearbyPlaces(destinationId: string | undefined, type: NearbyPlaceType) {
+  return useQuery({
+    queryKey: ['destinations', destinationId, 'nearby-places', type],
+    queryFn: async () => {
+      const { data } = await api.get<NearbyPlacesResponse>(`/destinations/${destinationId}/nearby-places`, {
+        params: { type, radius_km: 5, limit: 12 },
+      })
+      return data
+    },
+    enabled: !!destinationId,
+    staleTime: 30 * 60 * 1000,
+    retry: false,
   })
 }

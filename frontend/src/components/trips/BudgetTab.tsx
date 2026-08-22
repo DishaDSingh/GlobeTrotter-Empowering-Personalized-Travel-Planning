@@ -3,11 +3,13 @@ import { Bar, BarChart, CartesianGrid, Cell, Legend, Pie, PieChart, ResponsiveCo
 import { Pencil, Plus, Sparkles, Trash2, Wallet } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { Select } from '@/components/ui/Input'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { AddBudgetRecordModal } from './AddBudgetRecordModal'
 import { AIBudgetOptimizerModal } from './AIBudgetOptimizerModal'
 import { useBudget, useDeleteBudgetRecord } from '@/hooks/useBudget'
+import { DISPLAY_CURRENCIES, convertAmount, useCurrencyRates } from '@/hooks/useCurrency'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import type { BudgetRecord, ItineraryActivity, TripDetail, TripStop } from '@/types'
 
@@ -21,6 +23,16 @@ export function BudgetTab({ trip, stops, itineraryItems }: { trip: TripDetail; s
   const [editRecord, setEditRecord] = useState<BudgetRecord | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [aiOpen, setAiOpen] = useState(false)
+  const [displayCurrency, setDisplayCurrency] = useState(trip.currency)
+
+  const showingConverted = displayCurrency !== trip.currency
+  const { data: rateData, isLoading: ratesLoading } = useCurrencyRates(trip.currency, showingConverted)
+  const displayAmount = (amount: number): { value: string; converted: boolean } => {
+    if (!showingConverted) return { value: formatCurrency(amount, trip.currency), converted: false }
+    const converted = convertAmount(amount, rateData?.rates, displayCurrency)
+    if (converted == null) return { value: formatCurrency(amount, trip.currency), converted: false }
+    return { value: formatCurrency(converted, displayCurrency), converted: true }
+  }
 
   const cityBreakdown = useMemo(() => {
     const byStop = new Map<string, number>()
@@ -64,24 +76,48 @@ export function BudgetTab({ trip, stops, itineraryItems }: { trip: TripDetail; s
 
   return (
     <div className="space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-display text-lg font-semibold text-ink-900">Budget</h2>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-ink-400">View in</span>
+          <Select
+            value={displayCurrency}
+            onChange={(e) => setDisplayCurrency(e.target.value)}
+            className="w-28 py-1.5 text-sm"
+          >
+            {[trip.currency, ...DISPLAY_CURRENCIES.filter((c) => c !== trip.currency)].map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </Select>
+        </div>
+      </div>
+
+      {showingConverted && (
+        <p className="-mt-4 text-xs text-ink-400">
+          {ratesLoading
+            ? 'Converting using live exchange rates…'
+            : `Converted from ${trip.currency} using live exchange rates. Charts and individual expenses below stay in ${trip.currency}.`}
+        </p>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
         <Card className="p-5">
           <p className="text-xs font-medium text-ink-400">Total Budget</p>
-          <p className="mt-1 font-display text-2xl font-bold text-ink-900">{formatCurrency(summary.total_budget, trip.currency)}</p>
+          <p className="mt-1 font-display text-2xl font-bold text-ink-900">{displayAmount(summary.total_budget).value}</p>
         </Card>
         <Card className="p-5">
           <p className="text-xs font-medium text-ink-400">Spent</p>
-          <p className="mt-1 font-display text-2xl font-bold text-sunset-600">{formatCurrency(summary.spent, trip.currency)}</p>
+          <p className="mt-1 font-display text-2xl font-bold text-sunset-600">{displayAmount(summary.spent).value}</p>
         </Card>
         <Card className="p-5">
           <p className="text-xs font-medium text-ink-400">Remaining</p>
           <p className={`mt-1 font-display text-2xl font-bold ${summary.remaining < 0 ? 'text-danger-500' : 'text-emerald-600'}`}>
-            {formatCurrency(summary.remaining, trip.currency)}
+            {displayAmount(summary.remaining).value}
           </p>
         </Card>
         <Card className="p-5">
           <p className="text-xs font-medium text-ink-400">Avg. daily cost</p>
-          <p className="mt-1 font-display text-2xl font-bold text-ink-900">{formatCurrency(summary.average_daily_cost, trip.currency)}</p>
+          <p className="mt-1 font-display text-2xl font-bold text-ink-900">{displayAmount(summary.average_daily_cost).value}</p>
         </Card>
       </div>
 

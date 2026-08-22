@@ -19,7 +19,7 @@ export function Navbar() {
 
   if (!user) {
     return (
-      <header className="sticky top-0 z-40 hidden border-b border-ink-100 bg-white/85 backdrop-blur-md lg:block">
+      <header className="no-print sticky top-0 z-40 hidden border-b border-ink-100 bg-white/85 backdrop-blur-md lg:block">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold text-ink-900">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white">
@@ -63,7 +63,7 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-40 hidden border-b border-ink-100 bg-white/85 backdrop-blur-md lg:block">
+    <header className="no-print sticky top-0 z-40 hidden border-b border-ink-100 bg-white/85 backdrop-blur-md lg:block">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link to="/dashboard" className="flex items-center gap-2 font-display text-lg font-bold text-ink-900">
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white">

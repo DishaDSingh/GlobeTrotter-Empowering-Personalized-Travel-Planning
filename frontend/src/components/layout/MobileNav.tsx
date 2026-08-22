@@ -20,7 +20,7 @@ export function MobileNav() {
     }`
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-ink-100 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
+    <nav className="no-print fixed inset-x-0 bottom-0 z-40 flex items-center border-t border-ink-100 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
       {LINKS.map((link) => (
         <NavLink key={link.to} to={link.to} className={linkClass}>
           <link.icon className="h-5 w-5" />

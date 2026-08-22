@@ -128,6 +128,7 @@ export default function Explore() {
         onClose={() => setSelected(null)}
         saved={selected ? savedIds.has(selected.id) : false}
         onToggleSave={isAuthenticated ? handleToggleSave : undefined}
+        onSelectDestination={setSelected}
       />
     </div>
   )

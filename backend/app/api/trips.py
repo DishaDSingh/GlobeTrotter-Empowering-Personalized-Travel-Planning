@@ -1,8 +1,9 @@
+import re
 import uuid
 from datetime import date
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Session, joinedload
 
@@ -40,7 +41,10 @@ from app.schemas.trip import (
     TripStopUpdate,
     TripUpdate,
 )
+from app.schemas.packing import PackingListResponse
 from app.services import budget_service
+from app.services.ics_service import build_ics
+from app.services.packing_list_service import generate_packing_list
 
 router = APIRouter(prefix="/trips", tags=["trips"])
 
@@ -532,6 +536,67 @@ def get_calendar(trip_id: str, current_user: User = Depends(get_current_user), d
             )
         )
     return result
+
+
+@router.get("/{trip_id}/export.ics")
+def export_ics(trip_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    trip = _get_trip_or_404(db, trip_id)
+    _ensure_can_view(db, trip, current_user)
+
+    items = (
+        db.query(ItineraryActivity)
+        .options(joinedload(ItineraryActivity.activity).joinedload(Activity.destination))
+        .filter(ItineraryActivity.trip_id == trip_id, ItineraryActivity.date.isnot(None))
+        .order_by(ItineraryActivity.date, ItineraryActivity.start_time)
+        .all()
+    )
+    ics_content = build_ics(trip, items)
+    safe_name = _safe_filename(trip.name)
+    return Response(
+        content=ics_content,
+        media_type="text/calendar",
+        headers={"Content-Disposition": f'attachment; filename="{safe_name}.ics"'},
+    )
+
+
+def _safe_filename(name: str) -> str:
+    cleaned = re.sub(r"[^A-Za-z0-9 _-]", "", name).strip().replace(" ", "_")
+    return cleaned or "trip"
+
+
+@router.get("/{trip_id}/packing-list", response_model=PackingListResponse)
+def get_packing_list(trip_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    trip = _get_trip_or_404(db, trip_id)
+    _ensure_can_view(db, trip, current_user)
+
+    stops = (
+        db.query(TripStop)
+        .options(joinedload(TripStop.destination))
+        .filter(TripStop.trip_id == trip_id)
+        .all()
+    )
+    latitudes = [s.destination.latitude for s in stops if s.destination]
+
+    itinerary_activities = (
+        db.query(ItineraryActivity)
+        .options(joinedload(ItineraryActivity.activity))
+        .filter(ItineraryActivity.trip_id == trip_id)
+        .all()
+    )
+    categories = {ia.activity.category for ia in itinerary_activities if ia.activity}
+
+    duration_days = 1
+    if trip.start_date and trip.end_date:
+        duration_days = max((trip.end_date - trip.start_date).days + 1, 1)
+
+    result = generate_packing_list(
+        destination_latitudes=latitudes,
+        start_date=trip.start_date,
+        activity_categories=categories,
+        duration_days=duration_days,
+        multi_city=len(stops) > 1,
+    )
+    return PackingListResponse(season_label=result.season_label, categories=result.categories, notes=result.notes)
 
 
 # ---------------------------------------------------------------------------
