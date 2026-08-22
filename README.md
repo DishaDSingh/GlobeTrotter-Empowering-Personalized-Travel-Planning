@@ -161,8 +161,13 @@ cd backend
 
 ### Dataset import (optional)
 
-The app looks great immediately after `seed_demo_data.py` (10 curated destinations, 56
-activities). To import a larger, legitimate dataset instead:
+The app looks great immediately after `seed_demo_data.py` — **68 real destinations across 42
+countries and territories** (every inhabited continent, plus 13 different Indian states), each
+with an accurate description, currency, population, and realistic local daily-budget figure, and
+**346 real, named activities** (actual landmarks, museums, tours, and restaurants — not filler
+text). Seasonal "best time to visit" data is hand-curated for the most popular ~50 of them, with a
+latitude-based fallback for the rest. To import a larger, legitimate dataset on top of this
+instead:
 
 ```bash
 # Cities from a GeoNames-style CSV export

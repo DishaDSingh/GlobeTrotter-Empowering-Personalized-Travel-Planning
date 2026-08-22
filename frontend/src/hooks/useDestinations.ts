@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { Destination, RecommendationItem, SeasonalRecommendations, WeatherData } from '@/types'
 
@@ -16,6 +16,22 @@ export function useDestinations(filters: DestinationFilters = {}) {
       const { data } = await api.get<Destination[]>('/destinations', { params: filters })
       return data
     },
+  })
+}
+
+const EXPLORE_PAGE_SIZE = 24
+
+export function useDestinationsInfinite(filters: DestinationFilters = {}) {
+  return useInfiniteQuery({
+    queryKey: ['destinations', 'infinite', filters],
+    queryFn: async ({ pageParam }) => {
+      const { data } = await api.get<Destination[]>('/destinations', {
+        params: { ...filters, page: pageParam, page_size: EXPLORE_PAGE_SIZE },
+      })
+      return { items: data, page: pageParam }
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => (lastPage.items.length === EXPLORE_PAGE_SIZE ? lastPage.page + 1 : undefined),
   })
 }
 

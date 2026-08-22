@@ -224,8 +224,8 @@ export default function Landing() {
 
             <div className="mt-14 flex flex-wrap gap-x-10 gap-y-4 border-t border-white/10 pt-6 text-white/90">
               <div>
-                <p className="font-display text-2xl font-bold">120+</p>
-                <p className="eyebrow text-white/50">Cities</p>
+                <p className="font-display text-2xl font-bold">68+</p>
+                <p className="eyebrow text-white/50">Cities, 42 countries</p>
               </div>
               <div>
                 <p className="font-display text-2xl font-bold">4.9 ★</p>

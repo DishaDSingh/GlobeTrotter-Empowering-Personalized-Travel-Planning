@@ -33,6 +33,78 @@ SEASONAL_WINDOWS: dict[str, dict] = {
     "Jaipur": {"months": [10, 11, 12, 1, 2], "why": "cool, comfortable weather for sightseeing"},
     "Singapore": {"months": [2, 3, 4], "why": "the driest stretch in an otherwise humid, equatorial climate"},
     "New York": {"months": [4, 5, 6, 9, 10], "why": "mild spring and fall temperatures"},
+
+    # Europe
+    "Rome": {"months": [4, 5, 6, 9, 10], "why": "mild weather before and after the peak summer crowds"},
+    "Barcelona": {"months": [5, 6, 9, 10], "why": "warm, sunny days without peak-summer heat"},
+    "Amsterdam": {"months": [4, 5, 6, 9], "why": "mild spring or early autumn with fewer rainy days"},
+    "Berlin": {"months": [5, 6, 7, 8, 9], "why": "the warmest and driest months of the year"},
+    "Prague": {"months": [4, 5, 9, 10], "why": "mild spring and autumn weather with fewer tourists"},
+    "Vienna": {"months": [4, 5, 9, 10], "why": "comfortable spring and autumn temperatures"},
+    "Istanbul": {"months": [4, 5, 9, 10], "why": "mild temperatures, avoiding summer heat and winter rain"},
+    "Athens": {"months": [4, 5, 9, 10], "why": "warm but not scorching, ideal for exploring ancient sites"},
+    "Venice": {"months": [4, 5, 9, 10], "why": "mild weather without peak-summer crowds and flooding risk"},
+    "Florence": {"months": [4, 5, 9, 10], "why": "comfortable temperatures for walking the city"},
+    "Santorini": {"months": [5, 6, 9, 10], "why": "warm, sunny weather without the peak-August crowds"},
+    "Reykjavik": {"months": [6, 7, 8], "why": "long daylight hours and mild summer temperatures"},
+
+    # Asia
+    "Bangkok": {"months": [11, 12, 1, 2], "why": "the cool, dry season with the least humidity"},
+    "Kyoto": {"months": [3, 4, 10, 11], "why": "cherry blossoms in spring or vivid autumn foliage"},
+    "Seoul": {"months": [3, 4, 5, 9, 10], "why": "cherry blossoms in spring or crisp, clear autumn air"},
+    "Hong Kong": {"months": [10, 11, 12], "why": "cool and dry after the summer typhoon season"},
+    "Shanghai": {"months": [3, 4, 10, 11], "why": "mild spring and autumn weather"},
+    "Beijing": {"months": [4, 5, 9, 10], "why": "mild temperatures away from winter cold and summer haze"},
+    "Kuala Lumpur": {"months": [6, 7, 8], "why": "a relatively drier stretch between the region's two monsoons"},
+    "Hanoi": {"months": [10, 11, 3, 4], "why": "mild, dry weather outside the hot summer and damp winter"},
+    "Ubud": {"months": [4, 5, 6, 9], "why": "the dry season with lower humidity and fewer crowds"},
+    "Kathmandu": {"months": [3, 4, 10, 11], "why": "clear mountain views before or after the monsoon"},
+    "Colombo": {"months": [1, 2, 3], "why": "the driest months on Sri Lanka's west coast"},
+    "Malé": {"months": [1, 2, 3, 4], "why": "the dry season with calm seas ideal for diving"},
+
+    # Middle East
+    "Abu Dhabi": {"months": [11, 12, 1, 2, 3], "why": "cool, dry desert winter temperatures"},
+    "Doha": {"months": [11, 12, 1, 2], "why": "mild temperatures, avoiding the intense summer heat"},
+    "Muscat": {"months": [11, 12, 1, 2, 3], "why": "cooler, comfortable temperatures for exploring"},
+    "Amman": {"months": [4, 5, 9, 10], "why": "mild spring and autumn weather"},
+
+    # Africa
+    "Cape Town": {"months": [11, 12, 1, 2, 3], "why": "the warm, dry Southern Hemisphere summer"},
+    "Marrakech": {"months": [3, 4, 10, 11], "why": "mild temperatures before the summer heat sets in"},
+    "Cairo": {"months": [10, 11, 12, 2, 3], "why": "cooler, comfortable desert temperatures"},
+    "Zanzibar City": {"months": [6, 7, 8, 9], "why": "the dry season with lower humidity"},
+    "Nairobi": {"months": [1, 2, 7, 8, 9], "why": "the driest months, ideal for spotting wildlife"},
+
+    # Americas
+    "Rio de Janeiro": {"months": [9, 10, 11], "why": "pleasant temperatures between the hot summer and cooler winter"},
+    "Buenos Aires": {"months": [3, 4, 10, 11], "why": "mild autumn or spring weather"},
+    "Cusco": {"months": [5, 6, 7, 8, 9], "why": "the dry season, best for Machu Picchu and Andean trekking"},
+    "Mexico City": {"months": [3, 4, 10, 11], "why": "mild, dry weather outside the summer rains"},
+    "Toronto": {"months": [5, 6, 9, 10], "why": "warm but not humid, with colorful fall foliage in October"},
+    "San Francisco": {"months": [9, 10], "why": "the city's actual warm season, after the summer fog clears"},
+    "Los Angeles": {"months": [3, 4, 5, 10, 11], "why": "mild, sunny weather without peak-summer crowds"},
+    "Miami": {"months": [12, 1, 2, 3], "why": "warm and dry, outside of hurricane season"},
+    "Vancouver": {"months": [6, 7, 8, 9], "why": "the driest, sunniest months of the year"},
+    "Havana": {"months": [12, 1, 2, 3], "why": "dry season with comfortable temperatures, outside hurricane season"},
+
+    # Oceania
+    "Sydney": {"months": [3, 4, 9, 10, 11], "why": "mild autumn or spring weather"},
+    "Melbourne": {"months": [3, 4, 10, 11], "why": "mild autumn or spring temperatures"},
+    "Auckland": {"months": [12, 1, 2, 3], "why": "the warm Southern Hemisphere summer"},
+    "Queenstown": {"months": [12, 1, 2], "why": "summer weather ideal for hiking and outdoor adventure"},
+
+    # India (expanded)
+    "Agra": {"months": [10, 11, 12, 1, 2], "why": "cool, comfortable weather to visit the Taj Mahal"},
+    "Varanasi": {"months": [10, 11, 12, 1, 2], "why": "pleasant temperatures along the Ganges"},
+    "Udaipur": {"months": [10, 11, 2, 3], "why": "comfortable temperatures for sightseeing"},
+    "Kochi": {"months": [11, 12, 1, 2], "why": "cool, dry weather after the monsoon"},
+    "Amritsar": {"months": [10, 11, 2, 3], "why": "comfortable temperatures that avoid summer heat"},
+    "Bengaluru": {"months": [10, 11, 12, 1, 2], "why": "the coolest, most pleasant stretch of a mild year-round climate"},
+    "Chennai": {"months": [12, 1, 2], "why": "cooler, less humid weather away from the summer heat"},
+    "Kolkata": {"months": [11, 12, 1, 2], "why": "cool, dry winter weather"},
+    "Shimla": {"months": [3, 4, 5, 10, 11], "why": "mild hill-station weather in spring and autumn"},
+    "Rishikesh": {"months": [3, 4, 9, 10, 11], "why": "pleasant weather for rafting and trekking, outside monsoon"},
+    "Ahmedabad": {"months": [11, 12, 1, 2], "why": "cooler, comfortable temperatures away from extreme summer heat"},
 }
 
 SEASON_NAMES_NORTH = {12: "Winter", 1: "Winter", 2: "Winter", 3: "Spring", 4: "Spring", 5: "Spring",

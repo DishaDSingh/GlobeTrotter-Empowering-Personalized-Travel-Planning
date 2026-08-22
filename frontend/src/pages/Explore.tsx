@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { DestinationCard } from '@/components/destinations/DestinationCard'
 import { FilterPanel } from '@/components/destinations/FilterPanel'
 import { DestinationDetailDrawer } from '@/components/destinations/DestinationDetailDrawer'
-import { useDestinations, useDestinationSearch, type DestinationFilters } from '@/hooks/useDestinations'
+import { useDestinationsInfinite, useDestinationSearch, type DestinationFilters } from '@/hooks/useDestinations'
 import { useAuth } from '@/context/AuthContext'
 import { useSavedDestinations, useToggleSavedDestination } from '@/hooks/useUser'
 import { debounce } from '@/lib/utils'
@@ -25,10 +25,14 @@ export default function Explore() {
   const updateDebounced = useMemo(() => debounce((v: string) => setDebouncedQuery(v), 300), [])
 
   const searchResult = useDestinationSearch(debouncedQuery)
-  const browseResult = useDestinations(filters)
+  const browseResult = useDestinationsInfinite(filters)
 
   const isSearching = debouncedQuery.trim().length > 0
-  const destinations = isSearching ? searchResult.data : browseResult.data
+  const browsedDestinations = useMemo(
+    () => browseResult.data?.pages.flatMap((p) => p.items) ?? [],
+    [browseResult.data],
+  )
+  const destinations = isSearching ? searchResult.data : browsedDestinations
   const isLoading = isSearching ? searchResult.isLoading : browseResult.isLoading
 
   const { data: saved } = useSavedDestinations(isAuthenticated)
@@ -73,17 +77,35 @@ export default function Explore() {
           {isLoading ? (
             <CardSkeletonGrid count={9} />
           ) : destinations && destinations.length > 0 ? (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {destinations.map((destination) => (
-                <DestinationCard
-                  key={destination.id}
-                  destination={destination}
-                  onOpen={setSelected}
-                  saved={savedIds.has(destination.id)}
-                  onToggleSave={isAuthenticated ? handleToggleSave : undefined}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {destinations.map((destination) => (
+                  <DestinationCard
+                    key={destination.id}
+                    destination={destination}
+                    onOpen={setSelected}
+                    saved={savedIds.has(destination.id)}
+                    onToggleSave={isAuthenticated ? handleToggleSave : undefined}
+                  />
+                ))}
+              </div>
+              {!isSearching && browseResult.hasNextPage && (
+                <div className="mt-8 flex justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => browseResult.fetchNextPage()}
+                    isLoading={browseResult.isFetchingNextPage}
+                  >
+                    Load more destinations
+                  </Button>
+                </div>
+              )}
+              {!isSearching && !browseResult.hasNextPage && destinations.length > 0 && (
+                <p className="mt-8 text-center text-sm text-ink-400">
+                  You've reached the end — {destinations.length} destinations shown.
+                </p>
+              )}
+            </>
           ) : (
             <EmptyState
               icon={<Compass className="h-7 w-7" />}
