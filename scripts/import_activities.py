@@ -1,24 +1,3 @@
-"""Import a legitimate activities/POI dataset (e.g. an OpenTripMap export) into
-the `activities` table, resolving each row's destination by city name.
-
-Pipeline: Raw CSV -> Validation -> Normalization -> Deduplication -> DB.
-
-Expected input columns (default mapping): city, name, category, latitude,
-longitude, price, currency, duration_minutes, rating
-
-Category values are normalized (case-insensitively) to the app's fixed set:
-Attraction, Museum, Food, Adventure, Nature, Shopping, Entertainment,
-Culture, Religious, Nightlife. Unrecognized categories fall back to
-"Attraction" rather than being dropped.
-
-Usage:
-    backend/venv/Scripts/python.exe scripts/import_activities.py --file activities.csv
-
-Rows whose city doesn't already exist in `destinations` are skipped (run
-import_cities.py or seed_demo_data.py first) unless --create-missing-cities
-is passed, in which case a minimal destination row is created.
-"""
-
 import argparse
 import csv
 import os

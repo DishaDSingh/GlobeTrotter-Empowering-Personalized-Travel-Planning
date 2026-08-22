@@ -1,16 +1,3 @@
-"""Seed the database with realistic demo data so GlobeTrotter looks populated
-immediately after setup: 68 real destinations spanning 42 countries/territories
-across every inhabited continent (including 13 different Indian states), each
-with an accurate description, currency, and realistic local daily-cost figure;
-346 real, named activities (actual landmarks/museums/tours, not filler); demo
-users; and a couple of fully-built sample trips (stops + itinerary + budget).
-
-Usage (from the backend venv, with backend/ on PYTHONPATH):
-    backend/venv/Scripts/python.exe scripts/seed_demo_data.py
-
-Safe to re-run: it skips creating rows that already exist (matched by
-natural keys like city name or user email).
-"""
 
 import os
 import sys

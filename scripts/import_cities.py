@@ -1,25 +1,3 @@
-"""Import a legitimate cities dataset (e.g. a GeoNames export) into the
-`destinations` table.
-
-This is a generic transformation pipeline: Raw CSV -> Validation ->
-Normalization -> Deduplication -> PostgreSQL/SQLite. Different sources won't
-share a schema, so column mapping is configurable via --columns.
-
-Expected input: a CSV file. Default column mapping matches a GeoNames-style
-export (http://www.geonames.org/, CC-BY license) with columns:
-    name, country, country_code, latitude, longitude, population
-
-Usage:
-    backend/venv/Scripts/python.exe scripts/import_cities.py --file cities.csv
-    backend/venv/Scripts/python.exe scripts/import_cities.py --file cities.csv \\
-        --columns city=name,country=country,country_code=cc,latitude=lat,longitude=lon,population=pop
-
-Note: no dataset is bundled with this repo. Download one yourself from a
-source whose license permits it (e.g. GeoNames' cities1000.zip) and point
---file at the extracted CSV. Run scripts/seed_demo_data.py instead if you
-just want a working demo dataset with no external download.
-"""
-
 import argparse
 import csv
 import os
