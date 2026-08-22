@@ -2,6 +2,9 @@
 
 **Plan smarter. Travel better.**
 
+🌐 **Live app:** [globe-trotter-empowering-personaliz-ten.vercel.app](https://globe-trotter-empowering-personaliz-ten.vercel.app)
+· **API:** [globetrotter-api-knjd.onrender.com](https://globetrotter-api-knjd.onrender.com)
+
 GlobeTrotter is a personalized multi-city travel-planning platform. Discover destinations, build
 day-by-day itineraries, manage a per-trip and per-city budget, view everything on a map/calendar,
 and share your trip publicly for others to copy.
@@ -128,8 +131,8 @@ cp .env.example .env   # only VITE_API_URL is read from here by the frontend
 
 | Variable | Required? | Notes |
 |---|---|---|
-| `DATABASE_URL` | No | Defaults to `sqlite:///./globetrotter.db`. Set to a Postgres/Supabase URL for production. |
-| `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` | No | `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` also enable cover-image uploads (see below) if you additionally create a **public** storage bucket named `globetrotter-uploads`. Without them, uploads gracefully fall back to pasting an image URL. Never expose the service-role key to the frontend. |
+| `DATABASE_URL` | No | Defaults to `sqlite:///./globetrotter.db` for zero-setup local dev. Point it at a local PostgreSQL instance or Supabase Postgres for production (see Installation and Deployment below). |
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` | No | Needed if you point `DATABASE_URL` at Supabase Postgres. `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` also enable cover-image uploads if you additionally create a **public** storage bucket named `globetrotter-uploads`. Without them, uploads gracefully fall back to pasting an image URL. Never expose the service-role key to the frontend. |
 | `MAPBOX_TOKEN` | No | The map uses Leaflet + OpenStreetMap by default (no key needed). Unused unless you wire in a Mapbox tile layer yourself. |
 | `OPENAI_API_KEY` | No | Without it, `/ai/generate-itinerary` and `/ai/optimize-budget` use a deterministic rule-based generator, so AI features work out of the box. With it, itinerary generation calls OpenAI and validates the response before ever using it. |
 | `JWT_SECRET` | Recommended | Set a long random string in production; the default is insecure. |
@@ -139,6 +142,41 @@ cp .env.example .env   # only VITE_API_URL is read from here by the frontend
 ## Installation & local development
 
 **Prerequisites:** Node 20+, Python 3.11+.
+
+### Database
+
+No setup needed by default — the backend uses a local SQLite file (created automatically on
+first run at `backend/globetrotter.db`).
+
+Prefer a real PostgreSQL server locally instead (e.g. to match production more closely)? Install
+it directly, no Docker required:
+
+**macOS (Homebrew):**
+```bash
+brew install postgresql@16
+brew services start postgresql@16
+```
+
+**Windows:**
+Download and run the installer from [postgresql.org/download/windows](https://www.postgresql.org/download/windows/).
+It sets up the `postgres` superuser and starts the service automatically.
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get update
+sudo apt-get install -y postgresql postgresql-contrib
+sudo service postgresql start
+```
+
+Then set `DATABASE_URL` in your `.env` to point at it, e.g.:
+
+```bash
+DATABASE_URL=postgresql+psycopg2://postgres:yourpassword@localhost:5432/postgres
+```
+
+No manual database creation needed either way — the backend creates all its tables
+automatically on startup, whichever database you point it at (SQLite, local Postgres, or
+Supabase Postgres).
 
 ### Backend
 
