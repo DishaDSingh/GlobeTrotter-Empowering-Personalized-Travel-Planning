@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+backend/venv/
+backend/.env
+backend/*.db
+backend/globetrotter.db
+
+# Node
+node_modules/
+frontend/dist/
+frontend/.env
+
+# Env
+.env
+.env.local
+
+# Editor/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
